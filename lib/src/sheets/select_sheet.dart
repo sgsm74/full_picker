@@ -20,6 +20,8 @@ class SelectSheet extends StatefulWidget {
     required this.bodyTextUrl,
     required this.file,
     required this.fullPickerWidgetIcon,
+    required this.multiplePhotoCapture,
+    required this.onSelectedMultiPhoto,
     super.key,
   });
 
@@ -39,6 +41,8 @@ class SelectSheet extends StatefulWidget {
   final String bodyTextUrl;
   final String prefixName;
   final FullPickerWidgetIcon fullPickerWidgetIcon;
+  final bool multiplePhotoCapture;
+  final ValueSetter<FullPickerOutput>? onSelectedMultiPhoto;
 
   @override
   State<SelectSheet> createState() => _SheetSelectState();
@@ -106,6 +110,15 @@ class _SheetSelectState extends State<SelectSheet> {
         ),
       );
     }
+    if (widget.multiplePhotoCapture) {
+      itemList.add(
+        ItemSheet(
+          name: globalFullPickerLanguage.multiplePhotoCapture,
+          icon: Icons.photo_camera_back,
+          id: 6,
+        ),
+      );
+    }
 
     switch (itemList.length) {
       case 1:
@@ -143,8 +156,7 @@ class _SheetSelectState extends State<SelectSheet> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisExtent: 95,
-          childAspectRatio: MediaQuery.of(context).size.width /
-              (MediaQuery.of(context).size.height / childAspectRatio),
+          childAspectRatio: MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / childAspectRatio),
         ),
         itemCount: itemList.length,
         itemBuilder: (final BuildContext context, final int index) => Material(
@@ -154,10 +166,7 @@ class _SheetSelectState extends State<SelectSheet> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                if (itemList[index].widget == null)
-                  Icon(itemList[index].icon, size: 30)
-                else
-                  itemList[index].widget!,
+                if (itemList[index].widget == null) Icon(itemList[index].icon, size: 30) else itemList[index].widget!,
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(itemList[index].name),
@@ -194,6 +203,8 @@ class _SheetSelectState extends State<SelectSheet> {
       multiFile: widget.multiFile,
       inSheet: true,
       bodyTextUrl: widget.bodyTextUrl,
+      multiplePhotoCapture: widget.multiplePhotoCapture,
+      onSelectedMultiPhoto: widget.onSelectedMultiPhoto,
     );
   }
 }

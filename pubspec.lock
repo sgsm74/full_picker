@@ -272,6 +272,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  multiple_image_camera:
+    dependency: "direct main"
+    description:
+      name: multiple_image_camera
+      sha256: "9f0ba5f4eaf5b9f5b8e0f613f66fa7a73d763b8acddbf2b8642677a6ff92049e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   path:
     dependency: transitive
     description:

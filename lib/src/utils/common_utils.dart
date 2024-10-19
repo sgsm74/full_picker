@@ -12,6 +12,7 @@ import 'package:full_picker/src/utils/pl.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:light_compressor/light_compressor.dart';
 import 'package:mime/mime.dart';
+import 'package:multiple_image_camera/camera_file.dart';
 import 'package:uuid/uuid.dart';
 
 /// show sheet
@@ -31,17 +32,9 @@ void showSheet(
 FileType extensionType(final String extension) {
   if (extension == '') {
     return FileType.any;
-  } else if (extension == 'aac' ||
-      extension == 'midi' ||
-      extension == 'mp3' ||
-      extension == 'ogg' ||
-      extension == 'wav') {
+  } else if (extension == 'aac' || extension == 'midi' || extension == 'mp3' || extension == 'ogg' || extension == 'wav') {
     return FileType.audio;
-  } else if (extension == 'bmp' ||
-      extension == 'gif' ||
-      extension == 'jpeg' ||
-      extension == 'jpg' ||
-      extension == 'png') {
+  } else if (extension == 'bmp' || extension == 'gif' || extension == 'jpeg' || extension == 'jpg' || extension == 'png') {
     return FileType.image;
   } else if (extension == 'avi' ||
       extension == 'flv' ||
@@ -75,9 +68,9 @@ Future<FullPickerOutput?> getFiles({
   final bool videoCompressor = false,
   final bool imageCropper = false,
   final bool multiFile = false,
+  final bool multiplePhotoCapture = false,
 }) async {
-  final ProgressIndicatorDialog progressDialog =
-      ProgressIndicatorDialog(context);
+  final ProgressIndicatorDialog progressDialog = ProgressIndicatorDialog(context);
 
   final FilePickerResult? result = await FilePicker.platform
       .pickFiles(
@@ -141,8 +134,7 @@ Future<FullPickerOutput?> getFiles({
           if (!context.mounted) {
             return null;
           }
-          videoCompressorFile =
-              await videoCompress(context: context, file: file);
+          videoCompressorFile = await videoCompress(context: context, file: file);
 
           if (videoCompressorFile == null) {
             return null;
@@ -152,10 +144,7 @@ Future<FullPickerOutput?> getFiles({
         XFile? cropFile;
 
         /// image cropper
-        if ((file.extension == 'jpg' ||
-                file.extension == 'png' ||
-                file.extension == 'jpeg') &&
-            imageCropper) {
+        if ((file.extension == 'jpg' || file.extension == 'png' || file.extension == 'jpeg') && imageCropper) {
           try {
             if (!context.mounted) {
               return null;
@@ -195,10 +184,7 @@ Future<FullPickerOutput?> getFiles({
                   }(),
                 )
               : XFile(
-                  videoCompressorFile?.path ??
-                      cropFile?.path ??
-                      file.path ??
-                      '',
+                  videoCompressorFile?.path ?? cropFile?.path ?? file.path ?? '',
                   bytes: byte,
                   name: name.last,
                   mimeType: lookupMimeType(name.last!, headerBytes: byte),
@@ -284,10 +270,12 @@ Future<void> getFullPicker({
   required final bool multiFile,
   required final String prefixName,
   required final bool inSheet,
+  required final bool multiplePhotoCapture,
+  required final ValueSetter<FullPickerOutput>? onSelectedMultiPhoto,
 }) async {
   onIsUserChange.call(false);
   FullPickerOutput? value;
-
+  dynamic images = <MediaModel>[];
   if (id == 1) {
     /// gallery
 
@@ -313,6 +301,7 @@ Future<void> getFullPicker({
         onError: onError,
         imageCropper: imageCropper,
         onIsUserChange: onIsUserChange,
+        multiplePhotoCapture: multiplePhotoCapture,
       );
     } else if (image) {
       value = await getFiles(
@@ -333,6 +322,7 @@ Future<void> getFullPicker({
         imageCropper: imageCropper,
         onError: onError,
         onIsUserChange: onIsUserChange,
+        multiplePhotoCapture: multiplePhotoCapture,
       );
     } else if (video) {
       value = await getFiles(
@@ -346,6 +336,7 @@ Future<void> getFullPicker({
         multiFile: multiFile,
         onError: onError,
         onIsUserChange: onIsUserChange,
+        multiplePhotoCapture: multiplePhotoCapture,
       );
     }
 
@@ -378,7 +369,6 @@ Future<void> getFullPicker({
         ),
       ),
     );
-
     if (value == 1 || value == null) {
       // Error
       if (context.mounted) {
@@ -407,6 +397,7 @@ Future<void> getFullPicker({
       inSheet: inSheet,
       onError: onError,
       onIsUserChange: onIsUserChange,
+      multiplePhotoCapture: multiplePhotoCapture,
     );
 
     if (value == null) {
@@ -459,8 +450,7 @@ Future<void> getFullPicker({
     final String? url = await showDialog<String?>(
       context: context,
       barrierDismissible: false,
-      builder: (final BuildContext context) =>
-          URLInputDialog(body: bodyTextUrl),
+      builder: (final BuildContext context) => URLInputDialog(body: bodyTextUrl),
     );
 
     if (url != null) {
@@ -474,6 +464,57 @@ Future<void> getFullPicker({
         onError?.call(1);
       }
     }
+  } else if (id == 6) {
+    images = await Navigator.of(context).push(
+      MaterialPageRoute<dynamic>(
+        builder: (final BuildContext context) => CameraFile(),
+      ),
+    );
+    final List<File?> files = <File?>[];
+    final List<XFile?> xFiles = <XFile?>[];
+    final List<String?> name = <String?>[];
+    final List<Uint8List?> bytes = <Uint8List?>[];
+    if (images == 1 || images == null) {
+      // Error
+      if (context.mounted) {
+        checkError(
+          inSheet: inSheet,
+          onIsUserChange,
+          context,
+          isSelected: false,
+        );
+      }
+      onError?.call(6);
+    } else {
+      if (context.mounted) {
+        checkError(inSheet: inSheet, onIsUserChange, context, isSelected: true);
+      }
+
+      for (final MediaModel image in images as List<MediaModel>) {
+        //final XFile file = XFile(image.filePath);
+        //bytes.add(await file.readAsBytes());
+        bytes.add(image.blobImage);
+        name.add('$prefixName.jpg');
+        files.add(File(image.filePath));
+        xFiles.add(
+          getFillXFile(
+            file: File(image.filePath),
+            bytes: image.blobImage,
+            mime: 'image/jpeg',
+            name: '$prefixName.jpg',
+          ),
+        );
+      }
+    }
+    onSelectedMultiPhoto!.call(
+      FullPickerOutput(
+        bytes: bytes,
+        file: files,
+        xFile: xFiles,
+        fileType: FullPickerType.image,
+        name: name,
+      ),
+    );
   }
 }
 

@@ -132,19 +132,16 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
         onNewCameraSelected(
           Pl.isWeb
               ? cameras.lastWhere(
-                  (final CameraDescription description) =>
-                      description.lensDirection == CameraLensDirection.back,
+                  (final CameraDescription description) => description.lensDirection == CameraLensDirection.back,
                 )
               : cameras.firstWhere(
-                  (final CameraDescription description) =>
-                      description.lensDirection == CameraLensDirection.back,
+                  (final CameraDescription description) => description.lensDirection == CameraLensDirection.back,
                 ),
         );
       } catch (_) {
         onNewCameraSelected(
           cameras.lastWhere(
-            (final CameraDescription description) =>
-                description.lensDirection == CameraLensDirection.external,
+            (final CameraDescription description) => description.lensDirection == CameraLensDirection.external,
           ),
         );
       }
@@ -357,8 +354,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
               maintainSize: true,
               maintainAnimation: true,
               maintainState: true,
-              visible: (widget.imageCamera && widget.videoCamera) &&
-                  toggleCameraAndTextVisibility,
+              visible: (widget.imageCamera && widget.videoCamera) && toggleCameraAndTextVisibility,
               child: Text(
                 globalFullPickerLanguage.tapForPhotoHoldForVideo,
                 style: const TextStyle(color: Color(0xa3ffffff), fontSize: 20),
@@ -393,9 +389,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(100),
-                        onLongPress: widget.videoCamera && widget.imageCamera
-                            ? videoRecord
-                            : null,
+                        onLongPress: widget.videoCamera && widget.imageCamera ? videoRecord : null,
                         onTap: () {
                           if (widget.imageCamera) {
                             if (controller!.value.isRecordingVideo) {
@@ -444,20 +438,17 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
       firstCamera = false;
       onNewCameraSelected(
         cameras.lastWhere(
-          (final CameraDescription description) =>
-              description.lensDirection == CameraLensDirection.front,
+          (final CameraDescription description) => description.lensDirection == CameraLensDirection.front,
         ),
       );
     } else {
       onNewCameraSelected(
         Pl.isWeb
             ? cameras.lastWhere(
-                (final CameraDescription description) =>
-                    description.lensDirection == CameraLensDirection.back,
+                (final CameraDescription description) => description.lensDirection == CameraLensDirection.back,
               )
             : cameras.firstWhere(
-                (final CameraDescription description) =>
-                    description.lensDirection == CameraLensDirection.back,
+                (final CameraDescription description) => description.lensDirection == CameraLensDirection.back,
               ),
       );
       firstCamera = true;
