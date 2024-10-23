@@ -12,7 +12,6 @@ import 'package:full_picker/src/utils/pl.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:light_compressor/light_compressor.dart';
 import 'package:mime/mime.dart';
-import 'package:multiple_image_camera/camera_file.dart';
 import 'package:uuid/uuid.dart';
 
 /// show sheet
@@ -270,14 +269,9 @@ Future<void> getFullPicker({
   required final bool multiFile,
   required final String prefixName,
   required final bool inSheet,
-  // This 3 are for multi photo capture
-  required final bool multiplePhotoCapture,
-  required final ValueSetter<FullPickerOutput>? onSelectedMultiPhoto,
-  required final Widget? customDoneButton,
 }) async {
   onIsUserChange.call(false);
   FullPickerOutput? value;
-  dynamic images = <MediaModel>[];
   if (id == 1) {
     /// gallery
 
@@ -303,7 +297,6 @@ Future<void> getFullPicker({
         onError: onError,
         imageCropper: imageCropper,
         onIsUserChange: onIsUserChange,
-        multiplePhotoCapture: multiplePhotoCapture,
       );
     } else if (image) {
       value = await getFiles(
@@ -324,7 +317,6 @@ Future<void> getFullPicker({
         imageCropper: imageCropper,
         onError: onError,
         onIsUserChange: onIsUserChange,
-        multiplePhotoCapture: multiplePhotoCapture,
       );
     } else if (video) {
       value = await getFiles(
@@ -338,7 +330,6 @@ Future<void> getFullPicker({
         multiFile: multiFile,
         onError: onError,
         onIsUserChange: onIsUserChange,
-        multiplePhotoCapture: multiplePhotoCapture,
       );
     }
 
@@ -399,7 +390,6 @@ Future<void> getFullPicker({
       inSheet: inSheet,
       onError: onError,
       onIsUserChange: onIsUserChange,
-      multiplePhotoCapture: multiplePhotoCapture,
     );
 
     if (value == null) {
@@ -466,57 +456,6 @@ Future<void> getFullPicker({
         onError?.call(1);
       }
     }
-  } else if (id == 6) {
-    images = await Navigator.of(context).push(
-      MaterialPageRoute<dynamic>(
-        builder: (final BuildContext context) => CameraFile(
-          customButton: customDoneButton,
-        ),
-      ),
-    );
-    final List<File?> files = <File?>[];
-    final List<XFile?> xFiles = <XFile?>[];
-    final List<String?> name = <String?>[];
-    final List<Uint8List?> bytes = <Uint8List?>[];
-    if (images == 1 || images == null) {
-      // Error
-      if (context.mounted) {
-        checkError(
-          inSheet: inSheet,
-          onIsUserChange,
-          context,
-          isSelected: false,
-        );
-      }
-      onError?.call(6);
-    } else {
-      if (context.mounted) {
-        checkError(inSheet: inSheet, onIsUserChange, context, isSelected: true);
-      }
-
-      for (final MediaModel image in images as List<MediaModel>) {
-        bytes.add(image.blobImage);
-        name.add('$prefixName.jpg');
-        files.add(File(image.file.path));
-        xFiles.add(
-          getFillXFile(
-            file: File(image.file.path),
-            bytes: image.blobImage,
-            mime: 'image/jpeg',
-            name: '$prefixName.jpg',
-          ),
-        );
-      }
-    }
-    onSelectedMultiPhoto!.call(
-      FullPickerOutput(
-        bytes: bytes,
-        file: files,
-        xFile: xFiles,
-        fileType: FullPickerType.image,
-        name: name,
-      ),
-    );
   }
 }
 

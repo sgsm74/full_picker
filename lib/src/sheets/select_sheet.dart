@@ -20,9 +20,6 @@ class SelectSheet extends StatefulWidget {
     required this.bodyTextUrl,
     required this.file,
     required this.fullPickerWidgetIcon,
-    required this.multiplePhotoCapture,
-    required this.onSelectedMultiPhoto,
-    required this.customDoneButton,
     super.key,
   });
 
@@ -42,9 +39,6 @@ class SelectSheet extends StatefulWidget {
   final String bodyTextUrl;
   final String prefixName;
   final FullPickerWidgetIcon fullPickerWidgetIcon;
-  final bool multiplePhotoCapture;
-  final ValueSetter<FullPickerOutput>? onSelectedMultiPhoto;
-  final Widget? customDoneButton;
 
   @override
   State<SelectSheet> createState() => _SheetSelectState();
@@ -109,15 +103,6 @@ class _SheetSelectState extends State<SelectSheet> {
           icon: Icons.add_link_sharp,
           id: 5,
           widget: widget.fullPickerWidgetIcon.url,
-        ),
-      );
-    }
-    if (widget.multiplePhotoCapture) {
-      itemList.add(
-        ItemSheet(
-          name: globalFullPickerLanguage.multiplePhotoCapture,
-          icon: Icons.photo_camera_back,
-          id: 6,
         ),
       );
     }
@@ -205,9 +190,6 @@ class _SheetSelectState extends State<SelectSheet> {
       multiFile: widget.multiFile,
       inSheet: true,
       bodyTextUrl: widget.bodyTextUrl,
-      multiplePhotoCapture: widget.multiplePhotoCapture,
-      onSelectedMultiPhoto: widget.onSelectedMultiPhoto,
-      customDoneButton: widget.customDoneButton,
     );
   }
 }

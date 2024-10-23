@@ -82,8 +82,7 @@ class _ExonFilePicker extends State<FilePickerTest> {
                           await value.xFile[i]!.readAsBytes(),
                         );
 
-                        info =
-                            '${info}File Type :${value.fileType}\nPath File :${value.name[i]}\nSize File :$fileSizeInt\n--------\n';
+                        info = '${info}File Type :${value.fileType}\nPath File :${value.name[i]}\nSize File :$fileSizeInt\n--------\n';
                       }
                     } else {
                       info = value.data as String;
