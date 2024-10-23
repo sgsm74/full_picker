@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:full_picker/full_picker.dart';
 import 'package:full_picker/src/utils/pl.dart';
 
@@ -37,6 +38,11 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
 
   IconData flashLightIcon = Icons.flash_auto;
 
+  List<XFile> imageXFiles = <XFile>[];
+  List<Uint8List> imageBytes = <Uint8List>[];
+  List<String> imageNames = <String>[];
+  List<File> imageFiles = <File>[];
+  List<XFile> imageFilledXFiles = <XFile>[];
   @override
   void initState() {
     super.initState();
@@ -105,6 +111,60 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
         children: <Widget>[
           _cameraPreviewWidget(),
           _close(),
+          ListView.builder(
+            padding: const EdgeInsets.only(bottom: 100),
+            shrinkWrap: true,
+            itemCount: imageXFiles.length,
+            itemBuilder: (final BuildContext context, final int index) => Row(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.bottomLeft,
+                  // ignore: unnecessary_null_comparison
+                  child: imageXFiles[index] == null
+                      ? const Text('No image captured')
+                      : GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (final BuildContext context) => ImagePreviewView(File(imageXFiles[index].path)),
+                              ),
+                            );
+                          },
+                          child: Stack(
+                            children: [
+                              Image.file(
+                                File(
+                                  imageXFiles[index].path,
+                                ),
+                                height: 90,
+                                width: 60,
+                              ),
+                              Positioned(
+                                top: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      removeImage(index);
+                                    });
+                                  },
+                                  child: Image.network(
+                                    'https://logowik.com/content/uploads/images/close1437.jpg',
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              ],
+            ),
+            scrollDirection: Axis.horizontal,
+          ),
+          Visibility(visible: imageXFiles.isNotEmpty, child: _done()),
           _buttons(context),
         ],
       ),
@@ -204,28 +264,15 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
       if (filePath == '') {
         return;
       }
-
+      setState(() {});
       final XFile file = XFile(filePath!);
+      imageXFiles.add(file);
+    });
+  }
 
-      if (mounted) {
-        Navigator.pop(
-          context,
-          FullPickerOutput(
-            bytes: <Uint8List?>[await file.readAsBytes()],
-            fileType: FullPickerType.image,
-            name: <String?>['${widget.prefixName}.jpg'],
-            file: <File?>[File(file.path)],
-            xFile: <XFile?>[
-              getFillXFile(
-                file: File(file.path),
-                bytes: await file.readAsBytes(),
-                mime: 'image/jpeg',
-                name: '${widget.prefixName}.jpg',
-              ),
-            ],
-          ),
-        );
-      }
+  void removeImage(int index) {
+    setState(() {
+      imageXFiles.removeAt(index);
     });
   }
 
@@ -534,4 +581,142 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
           ),
         ),
       );
+
+  Widget _done() => PositionedDirectional(
+        start: 0,
+        child: Padding(
+          padding: EdgeInsetsDirectional.only(
+            end: 15,
+            top: Pl.isWeb ? 10 : 26,
+          ),
+          child: InkWell(
+            onTap: () async {
+              if (mounted) {
+                for (final XFile file in imageXFiles) {
+                  imageBytes.add(await file.readAsBytes());
+                  imageNames.add('${widget.prefixName}.jpg');
+                  imageFiles.add(File(file.path));
+                  imageFilledXFiles.add(
+                    getFillXFile(
+                      file: File(file.path),
+                      bytes: await file.readAsBytes(),
+                      mime: 'image/jpeg',
+                      name: '${widget.prefixName}.jpg',
+                    ),
+                  );
+                }
+                Navigator.pop(
+                  context,
+                  FullPickerOutput(
+                    bytes: imageBytes,
+                    fileType: FullPickerType.image,
+                    name: imageNames,
+                    file: imageFiles,
+                    xFile: imageFilledXFiles,
+                  ),
+                );
+              }
+            },
+            child: Container(
+              height: 70,
+              width: 120,
+              decoration: BoxDecoration(
+                color: Colors.white38,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Center(
+                child: Text(
+                  'ذخیره',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+}
+
+class ImagePreviewView extends StatefulWidget {
+  const ImagePreviewView(this.file, {super.key});
+  final File file;
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _ImagePreviewViewState createState() => _ImagePreviewViewState();
+}
+
+class _ImagePreviewViewState extends State<ImagePreviewView> {
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: <SystemUiOverlay>[
+        SystemUiOverlay.bottom,
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    super.dispose();
+  }
+
+  @override
+  Widget build(final BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.black,
+          elevation: 1,
+          leadingWidth: 100,
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: const Text(
+                'بازگشت',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+        body: InteractiveViewer(
+          child: Container(
+            height: double.infinity,
+            width: double.infinity,
+            alignment: Alignment.center,
+            color: Colors.black,
+            child: SafeArea(
+              child: SingleChildScrollView(
+                reverse: true,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Hero(
+                    tag: widget.file.path,
+                    child: Image.file(
+                      widget.file,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+  Future decodeImage() async {
+    // ignore: prefer_typing_uninitialized_variables
+    final decodedImage = await decodeImageFromList(widget.file.readAsBytesSync());
+    return decodedImage.width.toDouble();
+  }
 }
