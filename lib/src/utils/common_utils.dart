@@ -491,9 +491,6 @@ Future<void> getFullPicker({
       }
 
       for (final MediaModel image in images as List<MediaModel>) {
-        print('Image Path: ${image.file.path}');
-        //final XFile file = XFile(image.filePath);
-        //bytes.add(await file.readAsBytes());
         bytes.add(image.blobImage);
         name.add('$prefixName.jpg');
         files.add(File(image.file.path));
