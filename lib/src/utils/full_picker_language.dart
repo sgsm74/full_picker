@@ -22,6 +22,7 @@ class FullPickerLanguage {
     required this.noVoiceRecorded,
     required this.selectFile,
     required this.tapForPhotoHoldForVideo,
+    required this.multiplePhotoCapture,
   });
 
   String camera = 'Camera';
