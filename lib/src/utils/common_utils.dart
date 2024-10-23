@@ -270,8 +270,10 @@ Future<void> getFullPicker({
   required final bool multiFile,
   required final String prefixName,
   required final bool inSheet,
+  // This 3 are for multi photo capture
   required final bool multiplePhotoCapture,
   required final ValueSetter<FullPickerOutput>? onSelectedMultiPhoto,
+  required final Widget? customDoneButton,
 }) async {
   onIsUserChange.call(false);
   FullPickerOutput? value;
@@ -467,7 +469,9 @@ Future<void> getFullPicker({
   } else if (id == 6) {
     images = await Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-        builder: (final BuildContext context) => CameraFile(),
+        builder: (final BuildContext context) => CameraFile(
+          customButton: customDoneButton,
+        ),
       ),
     );
     final List<File?> files = <File?>[];

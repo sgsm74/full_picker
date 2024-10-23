@@ -29,6 +29,7 @@ class FullPicker {
     this.fullPickerWidgetIcon,
     this.multiplePhotoCapture = false,
     this.onSelectedMultiPhoto,
+    this.customDoneButton,
   }) {
     /// show or not show sheet for single item or multi item
     int countTrue = 0;
@@ -107,6 +108,7 @@ class FullPicker {
           multiFile: multiFile,
           multiplePhotoCapture: multiplePhotoCapture,
           onSelectedMultiPhoto: onSelectedMultiPhoto,
+          customDoneButton: customDoneButton,
         ),
         context,
       );
@@ -131,6 +133,7 @@ class FullPicker {
   final FullPickerWidgetIcon? fullPickerWidgetIcon;
   final bool multiplePhotoCapture;
   final ValueSetter<FullPickerOutput>? onSelectedMultiPhoto;
+  final Widget? customDoneButton;
 
   /// show file picker for single item
   void openAloneFullPicker(final int id) {
@@ -155,6 +158,7 @@ class FullPicker {
       inSheet: false,
       multiplePhotoCapture: multiplePhotoCapture,
       onSelectedMultiPhoto: onSelectedMultiPhoto,
+      customDoneButton: customDoneButton,
     );
   }
 }
