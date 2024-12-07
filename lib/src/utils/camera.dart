@@ -3,7 +3,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:full_picker/full_picker.dart';
@@ -127,13 +126,15 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (final BuildContext context) => ImagePreviewView(File(imageXFiles[index].path)),
+                              MaterialPageRoute<ImagePreviewView>(
+                                builder: (final BuildContext context) => ImagePreviewView(
+                                  File(imageXFiles[index].path),
+                                ),
                               ),
                             );
                           },
                           child: Stack(
-                            children: [
+                            children: <Widget>[
                               Image.file(
                                 File(
                                   imageXFiles[index].path,
@@ -271,7 +272,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
     });
   }
 
-  void removeImage(int index) {
+  void removeImage(final int index) {
     setState(() {
       imageXFiles.removeAt(index);
     });

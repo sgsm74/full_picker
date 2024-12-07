@@ -235,10 +235,11 @@ packages:
   light_compressor:
     dependency: "direct main"
     description:
-      name: light_compressor
-      sha256: dfcbc94f55b3e5ca628f4994ece43fac40c7d6d58e9aaa3f66685cd91419b0cf
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: master
+      resolved-ref: "8bad542858eab86000ac89bba7dee689c71e1f16"
+      url: "https://github.com/Ramtinmoradi/light_compressor.git"
+    source: git
     version: "2.2.0"
   matcher:
     dependency: transitive
