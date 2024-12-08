@@ -36,10 +36,10 @@ dependencies:
   file_picker: ^8.0.3
 
   # Compressor Video
-  light_compressor:
-    git:
-      url: https://github.com/Ramtinmoradi/light_compressor.git
-      ref: master
+  # light_compressor:
+  #   git:
+  #     url: https://github.com/Ramtinmoradi/light_compressor.git
+  #     ref: master
 
   # Recorder
   record: ^5.0.5
