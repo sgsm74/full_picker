@@ -42,7 +42,7 @@ dependencies:
   #     ref: master
 
   # Recorder
-  record: ^5.0.5
+  record: ^5.2.0
 
   # Stop watch timer
   stop_watch_timer: ^3.1.1
