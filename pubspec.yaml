@@ -66,6 +66,10 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+dependency_overrides:
+  image_cropper: ^8.1.0
+
+
 flutter:
   plugin:
     platforms:
