@@ -70,14 +70,9 @@ flutter:
         default_package: full_picker
       ios:
         default_package: full_picker
-      linux:
-        default_package: full_picker
-      macos:
-        default_package: full_picker
       web:
         default_package: full_picker
-      windows:
-        default_package: full_picker
+
 
 screenshots:
   - description: Full Picker logo.
