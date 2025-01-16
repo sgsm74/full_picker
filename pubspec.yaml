@@ -30,7 +30,11 @@ dependencies:
   fluttertoast: ^8.2.5
 
   # Crop
-  image_cropper: ^8.1.0
+  image_cropper:
+    git:
+      url: https://github.com/Ramtinmoradi/flutter_image_cropper.git
+      ref: master
+      path: image_cropper
 
   # File Picker
   file_picker: ^8.0.3
@@ -66,10 +70,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-dependency_overrides:
-  image_cropper: ^8.1.0
-
-
 flutter:
   plugin:
     platforms:
@@ -81,7 +81,7 @@ flutter:
       web:
         pluginClass: FullPickerPlugin
 
-
+publish_to: "none"
 
 screenshots:
   - description: Full Picker logo.

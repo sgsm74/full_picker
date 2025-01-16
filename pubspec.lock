@@ -179,10 +179,11 @@ packages:
   image_cropper:
     dependency: "direct main"
     description:
-      name: image_cropper
-      sha256: "266760ed426d7121f0ada02c672bfe5c1b5c714e908328716aee756f045709dc"
-      url: "https://pub.dev"
-    source: hosted
+      path: image_cropper
+      ref: master
+      resolved-ref: ff31467fc241f816ee15415dbb202ee476b02742
+      url: "https://github.com/Ramtinmoradi/flutter_image_cropper.git"
+    source: git
     version: "8.1.0"
   image_cropper_for_web:
     dependency: transitive
