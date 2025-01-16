@@ -70,11 +70,13 @@ flutter:
   plugin:
     platforms:
       android:
-        default_package: full_picker
+        package: com.example.full_picker
+        pluginClass: FullPickerPlugin
       ios:
-        default_package: full_picker
+        pluginClass: FullPickerPlugin
       web:
-        default_package: full_picker
+        pluginClass: FullPickerPlugin
+
 
 
 screenshots:
