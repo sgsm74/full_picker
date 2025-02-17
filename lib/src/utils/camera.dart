@@ -260,6 +260,12 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
     unawaited(_setFlashLightIcon(context));
   }
 
+  void removeImage(final int index) {
+    setState(() {
+      imageXFiles.removeAt(index);
+    });
+  }
+
   /// Take Picture
   void onTakePictureButtonPressed() {
     takePicture().then((final String? filePath) async {
@@ -269,12 +275,28 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
       setState(() {});
       final XFile file = XFile(filePath!);
       imageXFiles.add(file);
-    });
-  }
+      if (mounted) {
+        final String extension = getFileExtensionFullPicker(file.path);
+        final String fileName = generateFileName('image');
 
-  void removeImage(final int index) {
-    setState(() {
-      imageXFiles.removeAt(index);
+        Navigator.pop(
+          context,
+          FullPickerOutput(
+            bytes: <Uint8List?>[await file.readAsBytes()],
+            fileType: FullPickerType.image,
+            name: <String?>[fileName + extension],
+            file: <File?>[File(file.path)],
+            xFile: <XFile?>[
+              getFillXFile(
+                file: File(file.path),
+                bytes: await file.readAsBytes(),
+                mime: 'image/jpeg',
+                name: fileName + extension,
+              ),
+            ],
+          ),
+        );
+      }
     });
   }
 
@@ -282,13 +304,19 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
   Future<void> onStopButtonPressed() async {
     stopVideoClick = true;
     await stopVideoRecording().then((final XFile? file) async {
+      if (file == null) {
+        return;
+      }
+
       if (mounted) {
+        final String fileName = generateFileName('video');
+
         Navigator.pop(
           context,
           FullPickerOutput(
-            bytes: <Uint8List?>[await file!.readAsBytes()],
+            bytes: <Uint8List?>[await file.readAsBytes()],
             fileType: FullPickerType.video,
-            name: <String?>['${widget.prefixName}.mp4'],
+            name: <String?>['${widget.prefixName}$fileName.mp4'],
             file: () {
               try {
                 return <File?>[File(file.path)];
@@ -310,7 +338,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                   }(),
                   bytes: await file.readAsBytes(),
                   mime: 'video/mp4',
-                  name: '${widget.prefixName}.mp4',
+                  name: '${widget.prefixName}$fileName.mp4',
                 ),
             ],
           ),

@@ -12,6 +12,7 @@ import 'package:full_picker/src/utils/pl.dart';
 import 'package:image_cropper/image_cropper.dart';
 // import 'package:light_compressor/light_compressor.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 
 /// show sheet
@@ -418,10 +419,12 @@ Future<void> getFullPicker({
     }
   } else if (id == 4) {
     // Voice Recorder and isDismissible is false because recording may be closed unintentionally!
+    final String fileName = generateFileName('audio');
+
     showSheet(
       VoiceRecorderSheet(
         context: context,
-        voiceFileName: '${prefixName}_1.m4a',
+        voiceFileName: '$prefixName$fileName.wav',
         onSelected: (final FullPickerOutput value) {
           checkError(
             inSheet: inSheet,
@@ -567,9 +570,9 @@ Future<XFile?> cropImage({
         initAspectRatio: CropAspectRatioPreset.original,
         lockAspectRatio: false,
         aspectRatioPresets: <CropAspectRatioPresetData>[
+          CropAspectRatioPreset.original,
           CropAspectRatioPreset.square,
           CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
           CropAspectRatioPreset.ratio4x3,
           CropAspectRatioPreset.ratio16x9,
         ],
@@ -581,9 +584,6 @@ Future<XFile?> cropImage({
           CropAspectRatioPreset.square,
           CropAspectRatioPreset.ratio3x2,
           CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio5x3,
-          CropAspectRatioPreset.ratio5x4,
-          CropAspectRatioPreset.ratio7x5,
           CropAspectRatioPreset.ratio16x9,
         ],
       ),
@@ -628,4 +628,23 @@ XFile getFillXFile({
   } else {
     return XFile(file!.path, mimeType: mime, name: name);
   }
+}
+
+String getFileNameFullPicker(final String pathh) => basename(pathh);
+
+String getFileExtensionFullPicker(final String pathh) => extension(pathh);
+
+String generateFileName(final String fileType) {
+  final DateTime now = DateTime.now();
+
+  final String year = now.year.toString();
+  final String month = now.month.toString().padLeft(2, '0');
+  final String day = now.day.toString().padLeft(2, '0');
+  final String hour = now.hour.toString().padLeft(2, '0');
+  final String minute = now.minute.toString().padLeft(2, '0');
+  final String second = now.second.toString().padLeft(2, '0');
+
+  final String fileName = '${fileType}_$year$month${day}_$hour$minute$second';
+
+  return fileName;
 }
