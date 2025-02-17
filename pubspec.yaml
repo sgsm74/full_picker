@@ -30,16 +30,23 @@ dependencies:
   fluttertoast: ^8.2.5
 
   # Crop
-  image_cropper: ^8.0.2
+  image_cropper:
+    git:
+      url: https://github.com/Ramtinmoradi/flutter_image_cropper.git
+      ref: master
+      path: image_cropper
 
   # File Picker
   file_picker: ^8.0.3
 
   # Compressor Video
-  light_compressor: ^2.2.0
+  # light_compressor:
+  #   git:
+  #     url: https://github.com/Ramtinmoradi/light_compressor.git
+  #     ref: master
 
   # Recorder
-  record: ^5.0.5
+  record: ^5.2.0
 
   # Stop watch timer
   stop_watch_timer: ^3.1.1
@@ -67,17 +74,14 @@ flutter:
   plugin:
     platforms:
       android:
-        default_package: full_picker
+        package: com.example.full_picker
+        pluginClass: FullPickerPlugin
       ios:
-        default_package: full_picker
-      linux:
-        default_package: full_picker
-      macos:
-        default_package: full_picker
+        pluginClass: FullPickerPlugin
       web:
-        default_package: full_picker
-      windows:
-        default_package: full_picker
+        pluginClass: FullPickerPlugin
+
+publish_to: "none"
 
 screenshots:
   - description: Full Picker logo.

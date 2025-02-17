@@ -27,7 +27,10 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: <SystemUiOverlay>[SystemUiOverlay.top, SystemUiOverlay.bottom],
+    );
     super.dispose();
   }
 
@@ -82,8 +85,8 @@ class _ImagePreviewViewState extends State<ImagePreviewView> {
         ),
       );
 
-  Future decodeImage() async {
-    // ignore: prefer_typing_uninitialized_variables
+  Future<dynamic> decodeImage() async {
+    // ignore: prefer_typing_uninitialized_variables, always_specify_types
     final decodedImage = await decodeImageFromList(widget.file.readAsBytesSync());
     return decodedImage.width.toDouble();
   }
