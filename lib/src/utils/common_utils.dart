@@ -10,7 +10,6 @@ import 'package:full_picker/src/dialogs/url_input_dialog.dart';
 import 'package:full_picker/src/sheets/voice_recorder_sheet.dart';
 import 'package:full_picker/src/utils/pl.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:light_compressor/light_compressor.dart';
 import 'package:mime/mime.dart';
 import 'package:uuid/uuid.dart';
 
@@ -128,17 +127,17 @@ Future<FullPickerOutput?> getFiles({
         }
 
         /// video compressor
-        File? videoCompressorFile;
-        if (file.extension == 'mp4' && videoCompressor) {
-          if (!context.mounted) {
-            return null;
-          }
-          videoCompressorFile = await videoCompress(context: context, file: file);
+        // File? videoCompressorFile;
+        // if (file.extension == 'mp4' && videoCompressor) {
+        //   if (!context.mounted) {
+        //     return null;
+        //   }
+        //   videoCompressorFile = await videoCompress(context: context, file: file);
 
-          if (videoCompressorFile == null) {
-            return null;
-          }
-        }
+        //   if (videoCompressorFile == null) {
+        //     return null;
+        //   }
+        // }
 
         XFile? cropFile;
 
@@ -183,7 +182,7 @@ Future<FullPickerOutput?> getFiles({
                   }(),
                 )
               : XFile(
-                  videoCompressorFile?.path ?? cropFile?.path ?? file.path ?? '',
+                  cropFile?.path ?? file.path ?? '',
                   bytes: byte,
                   name: name.last,
                   mimeType: lookupMimeType(name.last!, headerBytes: byte),
@@ -485,60 +484,60 @@ void checkError(
 
 /// Web does not support video compression
 /// Video compressor
-Future<File?> videoCompress({
-  required final BuildContext context,
-  required final PlatformFile file,
-}) async {
-  final File mainFile = File(file.path!);
-  final ValueNotifier<double> onProgress = ValueNotifier<double>(0);
-  final LightCompressor lightCompressor = LightCompressor();
+// Future<File?> videoCompress({
+//   required final BuildContext context,
+//   required final PlatformFile file,
+// }) async {
+//   final File mainFile = File(file.path!);
+//   final ValueNotifier<double> onProgress = ValueNotifier<double>(0);
+//   final LightCompressor lightCompressor = LightCompressor();
 
-  final LightCompressor compressor = LightCompressor();
+//   final LightCompressor compressor = LightCompressor();
 
-  final PercentProgressDialog progressDialog = PercentProgressDialog(
-    context,
-    (final void value) {
-      if (onProgress.value.toString() != '1.0') {
-        compressor.cancelCompression();
-      }
-    },
-    onProgress,
-    globalFullPickerLanguage.onCompressing,
-  );
+//   final PercentProgressDialog progressDialog = PercentProgressDialog(
+//     context,
+//     (final void value) {
+//       if (onProgress.value.toString() != '1.0') {
+//         compressor.cancelCompression();
+//       }
+//     },
+//     onProgress,
+//     globalFullPickerLanguage.onCompressing,
+//   );
 
-  LightCompressor().onProgressUpdated.listen((final double event) {
-    onProgress.value = event / 100;
-  });
+//   LightCompressor().onProgressUpdated.listen((final double event) {
+//     onProgress.value = event / 100;
+//   });
 
-  try {
-    await progressDialog.show();
-    final dynamic response = await lightCompressor.compressVideo(
-      path: mainFile.path,
-      videoQuality: VideoQuality.medium,
-      android: AndroidConfig(isSharedStorage: false),
-      ios: IOSConfig(saveInGallery: false),
-      video: Video(
-        videoName: '${DateTime.now().millisecondsSinceEpoch}."mp4"',
-        videoBitrateInMbps: 24,
-      ),
-    );
+//   try {
+//     await progressDialog.show();
+//     final dynamic response = await lightCompressor.compressVideo(
+//       path: mainFile.path,
+//       videoQuality: VideoQuality.medium,
+//       android: AndroidConfig(isSharedStorage: false),
+//       ios: IOSConfig(saveInGallery: false),
+//       video: Video(
+//         videoName: '${DateTime.now().millisecondsSinceEpoch}."mp4"',
+//         videoBitrateInMbps: 24,
+//       ),
+//     );
 
-    progressDialog.dismiss();
+//     progressDialog.dismiss();
 
-    if (response is OnSuccess) {
-      return File(response.destinationPath);
-    } else if (response is OnFailure) {
-      /// failure message
-      return null;
-    } else if (response is OnCancelled) {
-      return null;
-    }
-  } catch (_) {
-    return null;
-  }
+//     if (response is OnSuccess) {
+//       return File(response.destinationPath);
+//     } else if (response is OnFailure) {
+//       /// failure message
+//       return null;
+//     } else if (response is OnCancelled) {
+//       return null;
+//     }
+//   } catch (_) {
+//     return null;
+//   }
 
-  return null;
-}
+//   return null;
+// }
 
 /// web does not support crop Image
 /// crop image
