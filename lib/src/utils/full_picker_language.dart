@@ -22,6 +22,7 @@ class FullPickerLanguage {
     required this.noVoiceRecorded,
     required this.selectFile,
     required this.tapForPhotoHoldForVideo,
+    required this.video,
   });
 
   String camera = 'Camera';
@@ -42,4 +43,5 @@ class FullPickerLanguage {
   String on = 'On';
   String auto = 'Auto';
   String denyAccessPermission = 'Unfortunately, you denied access, so it is not possible to use this part';
+  String video = 'Video';
 }

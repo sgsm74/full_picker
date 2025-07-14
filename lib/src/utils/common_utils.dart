@@ -9,7 +9,9 @@ import 'package:full_picker/full_picker.dart';
 import 'package:full_picker/src/dialogs/url_input_dialog.dart';
 import 'package:full_picker/src/sheets/voice_recorder_sheet.dart';
 import 'package:full_picker/src/utils/pl.dart';
+import 'package:full_picker/src/utils/video.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:limited_video_recorder/limited_video_recorder_config.dart';
 import 'package:mime/mime.dart';
 import 'package:uuid/uuid.dart';
 
@@ -249,6 +251,7 @@ Future<void> clearTemporaryFiles() async {
 /// 1 = Gallery
 /// 2 = Camera
 /// 3 = File
+/// 6 = video
 Future<void> getFullPicker({
   required final int id,
   required final BuildContext context,
@@ -268,6 +271,7 @@ Future<void> getFullPicker({
   required final bool multiFile,
   required final String prefixName,
   required final bool inSheet,
+  required final RecordingConfig recordingConfig,
 }) async {
   onIsUserChange.call(false);
   FullPickerOutput? value;
@@ -454,6 +458,31 @@ Future<void> getFullPicker({
         checkError(inSheet: inSheet, onIsUserChange, context, isSelected: true);
         onError?.call(1);
       }
+    }
+  } else if (id == 6) {
+    final dynamic value = await Navigator.of(context).push(
+      MaterialPageRoute<dynamic>(
+        builder: (final BuildContext context) => VideoRecorderPage(
+          config: recordingConfig,
+        ),
+      ),
+    );
+    if (value == 1 || value == null) {
+      /// Error
+      if (context.mounted) {
+        checkError(
+          inSheet: inSheet,
+          onIsUserChange,
+          context,
+          isSelected: false,
+        );
+      }
+      onError?.call(1);
+    } else {
+      if (context.mounted) {
+        checkError(inSheet: inSheet, onIsUserChange, context, isSelected: true);
+      }
+      onSelected.call(value as FullPickerOutput);
     }
   }
 }

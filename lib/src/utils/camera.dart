@@ -271,7 +271,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
     });
   }
 
-  void removeImage(int index) {
+  void removeImage(final int index) {
     setState(() {
       imageXFiles.removeAt(index);
     });

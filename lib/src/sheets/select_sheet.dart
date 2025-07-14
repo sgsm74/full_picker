@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:full_picker/full_picker.dart';
+import 'package:limited_video_recorder/limited_video_recorder_config.dart';
 
 /// show sheet for select models file picker
 class SelectSheet extends StatefulWidget {
@@ -20,6 +21,7 @@ class SelectSheet extends StatefulWidget {
     required this.bodyTextUrl,
     required this.file,
     required this.fullPickerWidgetIcon,
+    required this.recordingConfig,
     super.key,
   });
 
@@ -39,7 +41,7 @@ class SelectSheet extends StatefulWidget {
   final String bodyTextUrl;
   final String prefixName;
   final FullPickerWidgetIcon fullPickerWidgetIcon;
-
+  final RecordingConfig recordingConfig;
   @override
   State<SelectSheet> createState() => _SheetSelectState();
 }
@@ -63,7 +65,7 @@ class _SheetSelectState extends State<SelectSheet> {
       );
     }
 
-    if (widget.imageCamera || widget.videoCamera) {
+    if (widget.imageCamera) {
       itemList.add(
         ItemSheet(
           name: globalFullPickerLanguage.camera,
@@ -73,7 +75,16 @@ class _SheetSelectState extends State<SelectSheet> {
         ),
       );
     }
-
+    if (widget.videoCamera) {
+      itemList.add(
+        ItemSheet(
+          name: globalFullPickerLanguage.video,
+          icon: Icons.video_camera_back,
+          id: 6,
+          widget: widget.fullPickerWidgetIcon.video,
+        ),
+      );
+    }
     if (widget.file) {
       itemList.add(
         ItemSheet(
@@ -190,6 +201,7 @@ class _SheetSelectState extends State<SelectSheet> {
       multiFile: widget.multiFile,
       inSheet: true,
       bodyTextUrl: widget.bodyTextUrl,
+      recordingConfig: widget.recordingConfig,
     );
   }
 }

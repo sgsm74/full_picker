@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:full_picker/full_picker.dart';
+import 'package:limited_video_recorder/limited_video_recorder_config.dart';
 
 /// for cheng language
 FullPickerLanguage globalFullPickerLanguage = FullPickerLanguage();
@@ -27,6 +28,7 @@ class FullPicker {
     this.multiFile = false,
     this.onError,
     this.fullPickerWidgetIcon,
+    this.recordingConfig = const RecordingConfig(),
   }) {
     /// show or not show sheet for single item or multi item
     int countTrue = 0;
@@ -103,6 +105,7 @@ class FullPicker {
           prefixName: prefixName,
           imageCropper: imageCropper,
           multiFile: multiFile,
+          recordingConfig: recordingConfig,
         ),
         context,
       );
@@ -125,6 +128,7 @@ class FullPicker {
   final ValueSetter<int>? onError;
   final BuildContext context;
   final FullPickerWidgetIcon? fullPickerWidgetIcon;
+  final RecordingConfig recordingConfig;
 
   /// show file picker for single item
   void openAloneFullPicker(final int id) {
@@ -147,6 +151,7 @@ class FullPicker {
       imageCropper: imageCropper,
       multiFile: multiFile,
       inSheet: false,
+      recordingConfig: recordingConfig,
     );
   }
 }
