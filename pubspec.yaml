@@ -62,6 +62,7 @@ dependencies:
   limited_video_recorder: ^0.0.1
 
   video_player: ^2.10.0
+  universal_platform: ^1.1.0
 
 dev_dependencies:
   flutter_test:

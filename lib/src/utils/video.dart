@@ -26,12 +26,14 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
   int? videoWidth;
   int? videoHeight;
   int? videoFileSize;
-
+  Timer? _timer;
+  Duration _recordedDuration = Duration.zero;
   Future<void> startRecording() async {
     try {
       recorder = LimitedVideoRecorderController();
       recorder.onRecordingComplete(_loadVideo);
       await recorder.start(config: widget.config);
+      _startTimer();
       setState(() {
         isRecording = true;
       });
@@ -46,6 +48,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
       }
       setState(() {
         isRecording = false;
+        _timer?.cancel();
       });
     } catch (_) {}
   }
@@ -90,12 +93,30 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
       _controller?.dispose();
       _controller = null;
       recorder.dispose();
+      _timer?.cancel();
+    });
+  }
+
+  void _startTimer() {
+    _timer?.cancel(); // اطمینان از حذف تایمر قبلی
+    _recordedDuration = Duration.zero;
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      setState(() {
+        _recordedDuration += const Duration(seconds: 1);
+      });
+
+      final Duration maxDuration = Duration(milliseconds: widget.config.maxDuration);
+      if (widget.config.maxDuration > 0 && _recordedDuration >= maxDuration) {
+        stopRecording();
+      }
     });
   }
 
   @override
   void dispose() {
     _controller?.dispose();
+    _timer?.cancel();
     super.dispose();
   }
 
@@ -165,22 +186,24 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
             if (videoPath != null && _controller != null)
               Stack(
                 children: <Widget>[
-                  VideoPlayer(_controller!),
+                  AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: VideoPlayer(_controller!)),
                   Align(
                     alignment: Alignment.topLeft,
-                    child: ColoredBox(
+                    child: Container(
+                      margin: const EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(8),
                       color: Colors.white.withValues(alpha: 0.5),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
-                        children: [
+                        children: <Widget>[
                           Text(
-                            "Duration: ${videoDuration != null ? _formatDuration(videoDuration!) : '-'}",
+                            videoDuration != null ? _formatDuration(videoDuration!) : '-',
                             style: const TextStyle(fontSize: 12),
                           ),
-                          Text("Resolution: ${videoWidth ?? '-'} x ${videoHeight ?? '-'}", style: const TextStyle(fontSize: 12)),
+                          Text("${videoWidth ?? '-'} x ${videoHeight ?? '-'}", style: const TextStyle(fontSize: 12)),
                           Text(
-                            "File Size: ${videoFileSize != null ? _formatBytes(videoFileSize!) : '-'}",
+                            videoFileSize != null ? _formatBytes(videoFileSize!) : '-',
                             style: const TextStyle(fontSize: 12),
                           ),
                         ],
@@ -270,6 +293,17 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                       color: Colors.black,
                     ),
+                  ),
+                ),
+              ),
+            if (isRecording)
+              Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Text(
+                    _formatDuration(_recordedDuration),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
                   ),
                 ),
               ),
