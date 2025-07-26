@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:full_picker/full_picker.dart';
 import 'package:full_picker/src/utils/image_preview.dart';
 import 'package:full_picker/src/utils/pl.dart';
+import 'package:full_picker/src/utils/web_image_preview.dart';
 
 /// Custom Camera for Image and Video
 class Camera extends StatefulWidget {
@@ -128,36 +129,51 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (final BuildContext context) => ImagePreviewView(File(imageXFiles[index].path)),
+                                builder: (final BuildContext context) => kIsWeb
+                                    ? WebImagePreview(dataUrl: imageXFiles[index].readAsBytes())
+                                    : ImagePreviewView(File(imageXFiles[index].path)),
                               ),
                             );
                           },
-                          child: Stack(
-                            children: [
-                              Image.file(
-                                File(
-                                  imageXFiles[index].path,
-                                ),
-                                height: 90,
-                                width: 60,
-                              ),
-                              Positioned(
-                                top: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      removeImage(index);
-                                    });
-                                  },
-                                  child: Image.network(
-                                    'https://logowik.com/content/uploads/images/close1437.jpg',
-                                    height: 30,
-                                    width: 30,
+                          child: FutureBuilder<Uint8List>(
+                            future: imageXFiles[index].readAsBytes(),
+                            builder: (final BuildContext context, final AsyncSnapshot<Uint8List> snapshot) => Stack(
+                              children: <Widget>[
+                                if (kIsWeb) ...[
+                                  if (snapshot.hasData)
+                                    Image.memory(
+                                      snapshot.data!,
+                                      height: 90,
+                                      width: 60,
+                                      fit: BoxFit.cover,
+                                    )
+                                  else
+                                    const Center(child: CircularProgressIndicator()),
+                                ] else
+                                  Image.file(
+                                    File(
+                                      imageXFiles[index].path,
+                                    ),
+                                    height: 90,
+                                    width: 60,
+                                  ),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        removeImage(index);
+                                      });
+                                    },
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 30,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                 ),
