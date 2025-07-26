@@ -11,24 +11,22 @@ import 'package:full_picker/src/utils/image_preview.dart';
 import 'package:full_picker/src/utils/pl.dart';
 import 'package:full_picker/src/utils/web_image_preview.dart';
 
-/// Custom Camera for Image and Video
-class Camera extends StatefulWidget {
-  const Camera({
-    required this.imageCamera,
+/// Custom Video
+class Video extends StatefulWidget {
+  const Video({
     required this.videoCamera,
     required this.prefixName,
     super.key,
   });
 
   final bool videoCamera;
-  final bool imageCamera;
   final String prefixName;
 
   @override
-  State<Camera> createState() => _CameraState();
+  State<Video> createState() => _VideoState();
 }
 
-class _CameraState extends State<Camera> with WidgetsBindingObserver {
+class _VideoState extends State<Video> with WidgetsBindingObserver {
   Color colorCameraButton = Colors.white;
   List<CameraDescription> cameras = <CameraDescription>[];
   CameraController? controller;
@@ -113,75 +111,6 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
         children: <Widget>[
           _cameraPreviewWidget(),
           _close(),
-          ListView.builder(
-            padding: const EdgeInsets.only(bottom: 100),
-            shrinkWrap: true,
-            itemCount: imageXFiles.length,
-            itemBuilder: (final BuildContext context, final int index) => Row(
-              children: <Widget>[
-                Container(
-                  alignment: Alignment.bottomLeft,
-                  // ignore: unnecessary_null_comparison
-                  child: imageXFiles[index] == null
-                      ? const Text('No image captured')
-                      : GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (final BuildContext context) => kIsWeb
-                                    ? WebImagePreview(dataUrl: imageXFiles[index].readAsBytes())
-                                    : ImagePreviewView(File(imageXFiles[index].path)),
-                              ),
-                            );
-                          },
-                          child: FutureBuilder<Uint8List>(
-                            future: imageXFiles[index].readAsBytes(),
-                            builder: (final BuildContext context, final AsyncSnapshot<Uint8List> snapshot) => Stack(
-                              children: <Widget>[
-                                if (kIsWeb) ...[
-                                  if (snapshot.hasData)
-                                    Image.memory(
-                                      snapshot.data!,
-                                      height: 90,
-                                      width: 60,
-                                      fit: BoxFit.cover,
-                                    )
-                                  else
-                                    const Center(child: CircularProgressIndicator()),
-                                ] else
-                                  Image.file(
-                                    File(
-                                      imageXFiles[index].path,
-                                    ),
-                                    height: 90,
-                                    width: 60,
-                                  ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        removeImage(index);
-                                      });
-                                    },
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 30,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                ),
-              ],
-            ),
-            scrollDirection: Axis.horizontal,
-          ),
-          Visibility(visible: imageXFiles.isNotEmpty, child: _done()),
           _buttons(context),
         ],
       ),
@@ -414,16 +343,6 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                 height: 15,
               ),
             ),
-            Visibility(
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              visible: (widget.imageCamera && widget.videoCamera) && toggleCameraAndTextVisibility,
-              child: Text(
-                globalFullPickerLanguage.tapForPhotoHoldForVideo,
-                style: const TextStyle(color: Color(0xa3ffffff), fontSize: 20),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.only(top: 10, bottom: 15),
               child: Row(
@@ -453,19 +372,16 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                       color: Colors.transparent,
                       child: InkWell(
                         borderRadius: BorderRadius.circular(100),
+                        onLongPress: widget.videoCamera ? videoRecord : null,
                         onTap: () {
-                          if (widget.imageCamera) {
-                            if (controller!.value.isRecordingVideo) {
-                              onStopButtonPressed();
-                            } else {
-                              onTakePictureButtonPressed();
-                            }
+                          if (controller!.value.isRecordingVideo) {
+                            onStopButtonPressed();
                           } else {
                             videoRecord();
                           }
                         },
                         child: Icon(
-                          Icons.camera,
+                          Icons.videocam,
                           color: colorCameraButton,
                           size: 60,
                         ),
@@ -593,59 +509,6 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
               Icons.close,
               color: Colors.white,
               size: 33,
-            ),
-          ),
-        ),
-      );
-
-  Widget _done() => PositionedDirectional(
-        start: 0,
-        child: Padding(
-          padding: EdgeInsetsDirectional.only(
-            end: 15,
-            top: Pl.isWeb ? 10 : 26,
-          ),
-          child: InkWell(
-            onTap: () async {
-              if (mounted) {
-                for (final XFile file in imageXFiles) {
-                  imageBytes.add(await file.readAsBytes());
-                  imageNames.add('${widget.prefixName}.jpg');
-                  imageFiles.add(File(file.path));
-                  imageFilledXFiles.add(
-                    getFillXFile(
-                      file: File(file.path),
-                      bytes: await file.readAsBytes(),
-                      mime: 'image/jpeg',
-                      name: '${widget.prefixName}.jpg',
-                    ),
-                  );
-                }
-                Navigator.pop(
-                  context,
-                  FullPickerOutput(
-                    bytes: imageBytes,
-                    fileType: FullPickerType.image,
-                    name: imageNames,
-                    file: imageFiles,
-                    xFile: imageFilledXFiles,
-                  ),
-                );
-              }
-            },
-            child: Container(
-              height: 70,
-              width: 120,
-              decoration: BoxDecoration(
-                color: Colors.white38,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Center(
-                child: Text(
-                  globalFullPickerLanguage.ok,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-                ),
-              ),
             ),
           ),
         ),

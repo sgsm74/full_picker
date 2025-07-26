@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:full_picker/full_picker.dart';
 import 'package:limited_video_recorder/limited_video_recorder_config.dart';
-import 'package:universal_platform/universal_platform.dart';
 
 /// show sheet for select models file picker
 class SelectSheet extends StatefulWidget {
@@ -77,7 +76,7 @@ class _SheetSelectState extends State<SelectSheet> {
       );
     }
     //Record video with limited_video_recorder only on android
-    if (widget.videoCamera && UniversalPlatform.isAndroid) {
+    if (widget.videoCamera) {
       itemList.add(
         ItemSheet(
           name: globalFullPickerLanguage.video,

@@ -10,9 +10,11 @@ import 'package:full_picker/src/dialogs/url_input_dialog.dart';
 import 'package:full_picker/src/sheets/voice_recorder_sheet.dart';
 import 'package:full_picker/src/utils/pl.dart';
 import 'package:full_picker/src/utils/video.dart';
+import 'package:full_picker/src/utils/video_recorder.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:limited_video_recorder/limited_video_recorder_config.dart';
 import 'package:mime/mime.dart';
+import 'package:universal_platform/universal_platform.dart';
 import 'package:uuid/uuid.dart';
 
 /// show sheet
@@ -462,9 +464,14 @@ Future<void> getFullPicker({
   } else if (id == 6) {
     final dynamic value = await Navigator.of(context).push(
       MaterialPageRoute<dynamic>(
-        builder: (final BuildContext context) => VideoRecorderPage(
-          config: recordingConfig,
-        ),
+        builder: (final BuildContext context) => UniversalPlatform.isAndroid
+            ? VideoRecorderPage(
+                config: recordingConfig,
+              )
+            : Video(
+                videoCamera: videoCamera,
+                prefixName: prefixName,
+              ),
       ),
     );
     if (value == 1 || value == null) {
