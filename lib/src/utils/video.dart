@@ -216,7 +216,8 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       ),
                     ],
                   ),
-                if (videoPath == null) const Expanded(child: AndroidView(viewType: 'camera_preview', layoutDirection: TextDirection.ltr)),
+                if (videoPath == null)
+                  const SizedBox.expand(child: AndroidView(viewType: 'camera_preview', layoutDirection: TextDirection.ltr)),
                 if (!isRecording && videoPath == null)
                   SizedBox(
                     width: MediaQuery.of(context).size.width,
@@ -228,7 +229,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                         icon: Icon(
                           Icons.circle_rounded,
                           color: Colors.red,
-                          size: MediaQuery.sizeOf(context).width * 0.1,
+                          size: MediaQuery.sizeOf(context).width * 0.06,
                         ),
                       ),
                     ),
@@ -244,7 +245,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                         icon: Icon(
                           Icons.stop_rounded,
                           color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.1,
+                          size: MediaQuery.sizeOf(context).width * 0.06,
                         ),
                       ),
                     ),
@@ -260,7 +261,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                         icon: Icon(
                           Icons.done_rounded,
                           color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.1,
+                          size: MediaQuery.sizeOf(context).width * 0.06,
                         ),
                       ),
                     ),
@@ -276,7 +277,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                         icon: Icon(
                           Icons.delete_rounded,
                           color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.1,
+                          size: MediaQuery.sizeOf(context).width * 0.06,
                         ),
                       ),
                     ),
@@ -300,7 +301,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                         icon: Icon(
                           _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                           color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.1,
+                          size: MediaQuery.sizeOf(context).width * 0.06,
                         ),
                       ),
                     ),
