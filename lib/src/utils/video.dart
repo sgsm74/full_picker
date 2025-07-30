@@ -225,13 +225,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       alignment: Alignment.bottomCenter,
                       child: IconButton(
                         onPressed: startRecording,
-                        icon: Container(
-                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                          child: const Icon(
-                            Icons.circle_rounded,
-                            color: Colors.red,
-                          ),
+                        icon: const Icon(
+                          Icons.circle_rounded,
+                          color: Colors.red,
                         ),
                       ),
                     ),
@@ -244,13 +240,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       alignment: Alignment.bottomCenter,
                       child: IconButton(
                         onPressed: stopRecording,
-                        icon: Container(
-                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                          child: const Icon(
-                            Icons.stop_rounded,
-                            color: Colors.black,
-                          ),
+                        icon: const Icon(
+                          Icons.stop_rounded,
+                          color: Colors.black,
                         ),
                       ),
                     ),
