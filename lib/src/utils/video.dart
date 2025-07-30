@@ -7,6 +7,7 @@ import 'package:full_picker/full_picker.dart';
 import 'package:full_picker/src/utils/pl.dart';
 import 'package:limited_video_recorder/limited_video_recorder_config.dart';
 import 'package:limited_video_recorder/limited_video_recorder_controller.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoRecorderPage extends StatefulWidget {
@@ -28,6 +29,8 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
   int? videoFileSize;
   Timer? _timer;
   Duration _recordedDuration = Duration.zero;
+  bool _hasPermission = false;
+
   Future<void> startRecording() async {
     try {
       recorder = LimitedVideoRecorderController();
@@ -180,6 +183,34 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _checkPermissions();
+  }
+
+  Future<void> _checkPermissions() async {
+    final bool cameraPermission = await Permission.camera.isGranted;
+    final bool microphonePermission = await Permission.microphone.isGranted;
+
+    if (cameraPermission && microphonePermission) {
+      setState(() {
+        _hasPermission = true;
+      });
+    } else {
+      setState(_requestPermissions);
+    }
+  }
+
+  Future<void> _requestPermissions() async {
+    final Map<Permission, PermissionStatus> status = await <Permission>[Permission.camera, Permission.microphone].request();
+    if (status[Permission.camera]!.isGranted && status[Permission.microphone]!.isGranted) {
+      setState(() {
+        _hasPermission = true;
+      });
+    }
+  }
+
+  @override
   Widget build(final BuildContext context) => Scaffold(
         body: SafeArea(
           child: SizedBox(
@@ -216,7 +247,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       ),
                     ],
                   ),
-                if (videoPath == null)
+                if (videoPath == null && _hasPermission)
                   const SizedBox.expand(child: AndroidView(viewType: 'camera_preview', layoutDirection: TextDirection.ltr)),
                 _buttons(context)
               ],
