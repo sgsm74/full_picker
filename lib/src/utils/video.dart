@@ -180,137 +180,159 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
   }
 
   @override
-  Widget build(final BuildContext context) => Scaffold(
-        body: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          child: Stack(
-            children: <Widget>[
-              if (videoPath != null && _controller != null)
-                Stack(
-                  children: <Widget>[
-                    AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: VideoPlayer(_controller!)),
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Container(
-                        margin: const EdgeInsets.all(32),
-                        padding: const EdgeInsets.all(8),
-                        color: Colors.white.withValues(alpha: 0.5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text(
-                              videoDuration != null ? _formatDuration(videoDuration!) : '-',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                            Text("${videoWidth ?? '-'} x ${videoHeight ?? '-'}", style: const TextStyle(fontSize: 12)),
-                            Text(
-                              videoFileSize != null ? _formatBytes(videoFileSize!) : '-',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ],
+  Widget build(final BuildContext context) => SafeArea(
+        child: Scaffold(
+          body: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              children: <Widget>[
+                if (videoPath != null && _controller != null)
+                  Stack(
+                    children: <Widget>[
+                      AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: VideoPlayer(_controller!)),
+                      Align(
+                        alignment: Alignment.topLeft,
+                        child: Container(
+                          margin: const EdgeInsets.all(32),
+                          padding: const EdgeInsets.all(8),
+                          color: Colors.white.withValues(alpha: 0.5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                videoDuration != null ? _formatDuration(videoDuration!) : '-',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              Text("${videoWidth ?? '-'} x ${videoHeight ?? '-'}", style: const TextStyle(fontSize: 12)),
+                              Text(
+                                videoFileSize != null ? _formatBytes(videoFileSize!) : '-',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                if (videoPath == null) const Expanded(child: AndroidView(viewType: 'camera_preview', layoutDirection: TextDirection.ltr)),
+                if (!isRecording && videoPath == null)
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: IconButton(
+                        onPressed: startRecording,
+                        icon: Container(
+                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                          child: const Icon(
+                            Icons.circle_rounded,
+                            color: Colors.red,
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              if (videoPath == null) const Expanded(child: AndroidView(viewType: 'camera_preview', layoutDirection: TextDirection.ltr)),
-              if (!isRecording && videoPath == null)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: IconButton(
-                    onPressed: startRecording,
-                    icon: Container(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                      child: const Icon(
-                        Icons.circle_rounded,
-                        color: Colors.red,
+                  ),
+                if (isRecording && videoPath == null)
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: IconButton(
+                        onPressed: stopRecording,
+                        icon: Container(
+                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                          child: const Icon(
+                            Icons.stop_rounded,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              if (isRecording && videoPath == null)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: IconButton(
-                    onPressed: stopRecording,
-                    icon: Container(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                      child: const Icon(
-                        Icons.stop_rounded,
-                        color: Colors.black,
+                if (videoPath != null && _controller != null)
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: IconButton(
+                        onPressed: _done,
+                        icon: Container(
+                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                          child: const Icon(
+                            Icons.done_rounded,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              if (videoPath != null && _controller != null)
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: IconButton(
-                    onPressed: _done,
-                    icon: Container(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                      child: const Icon(
-                        Icons.done_rounded,
-                        color: Colors.black,
+                if (videoPath != null && _controller != null)
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: IconButton(
+                        onPressed: _resetVideo,
+                        icon: Container(
+                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                          child: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              if (videoPath != null && _controller != null)
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: IconButton(
-                    onPressed: _resetVideo,
-                    icon: Container(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                      child: const Icon(
-                        Icons.delete_rounded,
-                        color: Colors.black,
+                if (videoPath != null && _controller != null)
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            if (_controller!.value.isPlaying) {
+                              _controller!.pause();
+                            } else {
+                              _controller!.play();
+                            }
+                          });
+                        },
+                        icon: Container(
+                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
+                          child: Icon(
+                            _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              if (videoPath != null && _controller != null)
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (_controller!.value.isPlaying) {
-                          _controller!.pause();
-                        } else {
-                          _controller!.play();
-                        }
-                      });
-                    },
-                    icon: Container(
+                if (isRecording)
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
                       padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                      child: Icon(
-                        _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                        color: Colors.black,
+                      child: Text(
+                        _formatDuration(_recordedDuration),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
                       ),
                     ),
                   ),
-                ),
-              if (isRecording)
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Padding(
-                    padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                    child: Text(
-                      _formatDuration(_recordedDuration),
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
-                    ),
-                  ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       );
