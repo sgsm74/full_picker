@@ -27,6 +27,7 @@ void showSheet(
     context: context,
     showDragHandle: true,
     isDismissible: isDismissible,
+    useSafeArea: true,
     builder: (final BuildContext context) => widget,
   );
 }

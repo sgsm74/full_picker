@@ -180,9 +180,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
   }
 
   @override
-  Widget build(final BuildContext context) => SafeArea(
-        child: Scaffold(
-          body: SizedBox(
+  Widget build(final BuildContext context) => Scaffold(
+        body: SafeArea(
+          child: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: Stack(
@@ -218,77 +218,40 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                   ),
                 if (videoPath == null)
                   const SizedBox.expand(child: AndroidView(viewType: 'camera_preview', layoutDirection: TextDirection.ltr)),
-                if (!isRecording && videoPath == null)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
+                _buttons(context)
+              ],
+            ),
+          ),
+        ),
+      );
+
+  Container _buttons(final BuildContext context) => Container(
+        // remove this height
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.centerRight,
+        child: Column(
+          children: <Widget>[
+            const Expanded(
+              flex: 5,
+              child: SizedBox(
+                height: 15,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 15),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  if (videoPath != null && _controller != null)
+                    Expanded(
+                      flex: 3,
                       child: IconButton(
-                        onPressed: startRecording,
                         icon: Icon(
-                          Icons.circle_rounded,
-                          color: Colors.red,
-                          size: MediaQuery.sizeOf(context).width * 0.06,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (isRecording && videoPath == null)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: IconButton(
-                        onPressed: stopRecording,
-                        icon: Icon(
-                          Icons.stop_rounded,
+                          _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
                           color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.06,
+                          size: 32,
                         ),
-                      ),
-                    ),
-                  ),
-                if (videoPath != null && _controller != null)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: IconButton(
-                        onPressed: _done,
-                        icon: Icon(
-                          Icons.done_rounded,
-                          color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.06,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (videoPath != null && _controller != null)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: IconButton(
-                        onPressed: _resetVideo,
-                        icon: Icon(
-                          Icons.delete_rounded,
-                          color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.06,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (videoPath != null && _controller != null)
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Align(
-                      alignment: Alignment.bottomRight,
-                      child: IconButton(
                         onPressed: () {
                           setState(() {
                             if (_controller!.value.isPlaying) {
@@ -298,28 +261,68 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                             }
                           });
                         },
-                        icon: Icon(
-                          _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                          color: Colors.black,
-                          size: MediaQuery.sizeOf(context).width * 0.06,
+                      ),
+                    ),
+                  Visibility(
+                    visible: videoPath != null && _controller != null,
+                    replacement: Expanded(
+                      flex: 3,
+                      child: Material(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(100),
+                          onTap: () {
+                            if (isRecording) {
+                              stopRecording();
+                            } else {
+                              startRecording();
+                            }
+                          },
+                          child: Icon(
+                            isRecording ? Icons.stop_rounded : Icons.circle_rounded,
+                            color: isRecording ? Colors.black : Colors.red,
+                            size: 32,
+                          ),
+                        ),
+                      ),
+                    ),
+                    child: Expanded(
+                      flex: 3,
+                      child: Material(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(100),
+                          onTap: _done,
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.black,
+                            size: 32,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                if (isRecording)
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: Padding(
-                      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                      child: Text(
-                        _formatDuration(_recordedDuration),
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+                  if (videoPath != null && _controller != null)
+                    Expanded(
+                      flex: 3,
+                      child: Visibility(
+                        visible: videoPath != null && _controller != null,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.delete_rounded,
+                            color: Colors.black,
+                            size: 32,
+                          ),
+                          onPressed: _resetVideo,
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       );
 }
