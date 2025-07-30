@@ -263,13 +263,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       alignment: Alignment.bottomCenter,
                       child: IconButton(
                         onPressed: _done,
-                        icon: Container(
-                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                          child: const Icon(
-                            Icons.done_rounded,
-                            color: Colors.black,
-                          ),
+                        icon: const Icon(
+                          Icons.done_rounded,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -282,13 +278,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                       alignment: Alignment.bottomLeft,
                       child: IconButton(
                         onPressed: _resetVideo,
-                        icon: Container(
-                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                          child: const Icon(
-                            Icons.delete_rounded,
-                            color: Colors.black,
-                          ),
+                        icon: const Icon(
+                          Icons.delete_rounded,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -309,13 +301,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                             }
                           });
                         },
-                        icon: Container(
-                          padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-                          decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.white),
-                          child: Icon(
-                            _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                            color: Colors.black,
-                          ),
+                        icon: Icon(
+                          _controller!.value.isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                          color: Colors.black,
                         ),
                       ),
                     ),
