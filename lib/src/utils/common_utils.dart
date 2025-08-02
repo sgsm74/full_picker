@@ -14,6 +14,7 @@ import 'package:full_picker/src/utils/video_recorder.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:limited_video_recorder/limited_video_recorder_config.dart';
 import 'package:mime/mime.dart';
+import 'package:path/path.dart';
 import 'package:universal_platform/universal_platform.dart';
 import 'package:uuid/uuid.dart';
 
@@ -37,7 +38,12 @@ FileType extensionType(final String extension) {
     return FileType.any;
   } else if (extension == 'aac' || extension == 'midi' || extension == 'mp3' || extension == 'ogg' || extension == 'wav') {
     return FileType.audio;
-  } else if (extension == 'bmp' || extension == 'gif' || extension == 'jpeg' || extension == 'jpg' || extension == 'png') {
+  } else if (extension == 'bmp' ||
+      extension == 'gif' ||
+      extension == 'jpeg' ||
+      extension == 'jpg' ||
+      extension == 'heic' ||
+      extension == 'png') {
     return FileType.image;
   } else if (extension == 'avi' ||
       extension == 'flv' ||
@@ -123,11 +129,11 @@ Future<FullPickerOutput?> getFiles({
         }
 
         // for counter
-        if (extensionType(file.extension!) == FileType.video) {
+        if (extensionType(file.extension!.toLowerCase()) == FileType.video) {
           numberVideo = numberVideo + 1;
         }
 
-        if (extensionType(file.extension!) == FileType.image) {
+        if (extensionType(file.extension!.toLowerCase()) == FileType.image) {
           numberPicture = numberPicture + 1;
         }
 
@@ -147,7 +153,11 @@ Future<FullPickerOutput?> getFiles({
         XFile? cropFile;
 
         /// image cropper
-        if ((file.extension == 'jpg' || file.extension == 'png' || file.extension == 'jpeg') && imageCropper) {
+        if ((file.extension == 'jpg' ||
+                file.extension == 'png' ||
+                (file.extension?.toLowerCase() ?? '') == 'heic' ||
+                file.extension == 'jpeg') &&
+            imageCropper) {
           try {
             if (!context.mounted) {
               return null;
@@ -298,6 +308,7 @@ Future<void> getFullPicker({
           'png',
           'gif',
           'bmp',
+          'heic',
         ],
         multiFile: multiFile,
         onError: onError,
@@ -317,6 +328,7 @@ Future<void> getFullPicker({
           'jpeg',
           'jpg',
           'png',
+          'heic',
         ],
         multiFile: multiFile,
         inSheet: inSheet,
@@ -365,6 +377,7 @@ Future<void> getFullPicker({
           imageCamera: imageCamera,
           videoCamera: videoCamera,
           prefixName: prefixName,
+          imageCropper: imageCropper,
         ),
       ),
     );
@@ -416,10 +429,12 @@ Future<void> getFullPicker({
     }
   } else if (id == 4) {
     // Voice Recorder and isDismissible is false because recording may be closed unintentionally!
+    final String fileName = generateFileName('audio');
+
     showSheet(
       VoiceRecorderSheet(
         context: context,
-        voiceFileName: '${prefixName}_1.m4a',
+        voiceFileName: '$prefixName$fileName.wav',
         onSelected: (final FullPickerOutput value) {
           checkError(
             inSheet: inSheet,
@@ -595,9 +610,9 @@ Future<XFile?> cropImage({
         initAspectRatio: CropAspectRatioPreset.original,
         lockAspectRatio: false,
         aspectRatioPresets: <CropAspectRatioPresetData>[
+          CropAspectRatioPreset.original,
           CropAspectRatioPreset.square,
           CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
           CropAspectRatioPreset.ratio4x3,
           CropAspectRatioPreset.ratio16x9,
         ],
@@ -609,9 +624,6 @@ Future<XFile?> cropImage({
           CropAspectRatioPreset.square,
           CropAspectRatioPreset.ratio3x2,
           CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio5x3,
-          CropAspectRatioPreset.ratio5x4,
-          CropAspectRatioPreset.ratio7x5,
           CropAspectRatioPreset.ratio16x9,
         ],
       ),
@@ -656,4 +668,23 @@ XFile getFillXFile({
   } else {
     return XFile(file!.path, mimeType: mime, name: name);
   }
+}
+
+String getFileNameFullPicker(final String pathh) => basename(pathh);
+
+String getFileExtensionFullPicker(final String pathh) => extension(pathh);
+
+String generateFileName(final String fileType) {
+  final DateTime now = DateTime.now();
+
+  final String year = now.year.toString();
+  final String month = now.month.toString().padLeft(2, '0');
+  final String day = now.day.toString().padLeft(2, '0');
+  final String hour = now.hour.toString().padLeft(2, '0');
+  final String minute = now.minute.toString().padLeft(2, '0');
+  final String second = now.second.toString().padLeft(2, '0');
+
+  final String fileName = '${fileType}_$year$month${day}_$hour$minute$second';
+
+  return fileName;
 }

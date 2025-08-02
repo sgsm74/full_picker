@@ -14,12 +14,14 @@ import 'package:full_picker/src/utils/web_image_preview.dart';
 /// Custom Camera for Image and Video
 class Camera extends StatefulWidget {
   const Camera({
+    required this.imageCropper,
     required this.imageCamera,
     required this.videoCamera,
     required this.prefixName,
     super.key,
   });
 
+  final bool imageCropper;
   final bool videoCamera;
   final bool imageCamera;
   final String prefixName;
@@ -45,6 +47,10 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
   List<String> imageNames = <String>[];
   List<File> imageFiles = <File>[];
   List<XFile> imageFilledXFiles = <XFile>[];
+  StreamSubscription<dynamic>? _subscription;
+  DeviceOrientation currentOrientation = DeviceOrientation.portraitUp;
+  DeviceOrientation? lockedOrientation;
+
   @override
   void initState() {
     super.initState();
@@ -81,7 +87,12 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
+    if (lockedOrientation != null) {
+      _unlockOrientation();
+    }
+
     controller?.dispose();
+    _subscription?.cancel();
 
     super.dispose();
   }
@@ -109,81 +120,83 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: <Widget>[
-          _cameraPreviewWidget(),
-          _close(),
-          ListView.builder(
-            padding: const EdgeInsets.only(bottom: 100),
-            shrinkWrap: true,
-            itemCount: imageXFiles.length,
-            itemBuilder: (final BuildContext context, final int index) => Row(
-              children: <Widget>[
-                Container(
-                  alignment: Alignment.bottomLeft,
-                  // ignore: unnecessary_null_comparison
-                  child: imageXFiles[index] == null
-                      ? const Text('No image captured')
-                      : GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (final BuildContext context) => kIsWeb
-                                    ? WebImagePreview(dataUrl: imageXFiles[index].readAsBytes())
-                                    : ImagePreviewView(File(imageXFiles[index].path)),
-                              ),
-                            );
-                          },
-                          child: FutureBuilder<Uint8List>(
-                            future: imageXFiles[index].readAsBytes(),
-                            builder: (final BuildContext context, final AsyncSnapshot<Uint8List> snapshot) => Stack(
-                              children: <Widget>[
-                                if (kIsWeb) ...[
-                                  if (snapshot.hasData)
-                                    Image.memory(
-                                      snapshot.data!,
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            _cameraPreviewWidget(),
+            _close(),
+            ListView.builder(
+              padding: const EdgeInsets.only(bottom: 100),
+              shrinkWrap: true,
+              itemCount: imageXFiles.length,
+              itemBuilder: (final BuildContext context, final int index) => Row(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    // ignore: unnecessary_null_comparison
+                    child: imageXFiles[index] == null
+                        ? const Text('No image captured')
+                        : GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (final BuildContext context) => kIsWeb
+                                      ? WebImagePreview(dataUrl: imageXFiles[index].readAsBytes())
+                                      : ImagePreviewView(File(imageXFiles[index].path)),
+                                ),
+                              );
+                            },
+                            child: FutureBuilder<Uint8List>(
+                              future: imageXFiles[index].readAsBytes(),
+                              builder: (final BuildContext context, final AsyncSnapshot<Uint8List> snapshot) => Stack(
+                                children: <Widget>[
+                                  if (kIsWeb) ...[
+                                    if (snapshot.hasData)
+                                      Image.memory(
+                                        snapshot.data!,
+                                        height: 90,
+                                        width: 60,
+                                        fit: BoxFit.cover,
+                                      )
+                                    else
+                                      const Center(child: CircularProgressIndicator()),
+                                  ] else
+                                    Image.file(
+                                      File(
+                                        imageXFiles[index].path,
+                                      ),
                                       height: 90,
                                       width: 60,
-                                      fit: BoxFit.cover,
-                                    )
-                                  else
-                                    const Center(child: CircularProgressIndicator()),
-                                ] else
-                                  Image.file(
-                                    File(
-                                      imageXFiles[index].path,
                                     ),
-                                    height: 90,
-                                    width: 60,
-                                  ),
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        removeImage(index);
-                                      });
-                                    },
-                                    child: Icon(
-                                      Icons.close,
-                                      size: 30,
+                                  Positioned(
+                                    top: 0,
+                                    right: 0,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          removeImage(index);
+                                        });
+                                      },
+                                      child: const Icon(
+                                        Icons.close,
+                                        size: 30,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                ),
-              ],
+                  ),
+                ],
+              ),
+              scrollDirection: Axis.horizontal,
             ),
-            scrollDirection: Axis.horizontal,
-          ),
-          Visibility(visible: imageXFiles.isNotEmpty, child: _done()),
-          _buttons(context),
-        ],
+            Visibility(visible: imageXFiles.isNotEmpty, child: _done()),
+            _buttons(context),
+          ],
+        ),
       ),
     );
   }
@@ -275,6 +288,36 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
     unawaited(_setFlashLightIcon(context));
   }
 
+  Future<void> _lockOrientation() async {
+    lockedOrientation = currentOrientation;
+
+    try {
+      await controller?.lockCaptureOrientation(
+        toggleLandscapeOrientation(currentOrientation),
+      );
+    } catch (_) {}
+  }
+
+  DeviceOrientation toggleLandscapeOrientation(
+    final DeviceOrientation currentOrientation,
+  ) {
+    if (currentOrientation == DeviceOrientation.landscapeLeft) {
+      return DeviceOrientation.landscapeRight;
+    } else if (currentOrientation == DeviceOrientation.landscapeRight) {
+      return DeviceOrientation.landscapeLeft;
+    } else {
+      return currentOrientation;
+    }
+  }
+
+  Future<void> _unlockOrientation() async {
+    lockedOrientation = null;
+
+    try {
+      await controller?.unlockCaptureOrientation();
+    } catch (_) {}
+  }
+
   /// Take Picture
   void onTakePictureButtonPressed() {
     takePicture().then((final String? filePath) async {
@@ -296,14 +339,23 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
   /// Stop Video Recording
   Future<void> onStopButtonPressed() async {
     stopVideoClick = true;
+
+    await _unlockOrientation();
+
     await stopVideoRecording().then((final XFile? file) async {
+      if (file == null) {
+        return;
+      }
+
       if (mounted) {
+        final String fileName = generateFileName('video');
+
         Navigator.pop(
           context,
           FullPickerOutput(
-            bytes: <Uint8List?>[await file!.readAsBytes()],
+            bytes: <Uint8List?>[await file.readAsBytes()],
             fileType: FullPickerType.video,
-            name: <String?>['${widget.prefixName}.mp4'],
+            name: <String?>['${widget.prefixName}$fileName.mp4'],
             file: () {
               try {
                 return <File?>[File(file.path)];
@@ -325,7 +377,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
                   }(),
                   bytes: await file.readAsBytes(),
                   mime: 'video/mp4',
-                  name: '${widget.prefixName}.mp4',
+                  name: '${widget.prefixName}$fileName.mp4',
                 ),
             ],
           ),
@@ -346,8 +398,11 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
     }
 
     try {
+      await _lockOrientation();
+
       await controller!.startVideoRecording();
     } on CameraException catch (e) {
+      await _unlockOrientation();
       _showCameraException(e);
       return;
     }
@@ -421,6 +476,7 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
               visible: (widget.imageCamera && widget.videoCamera) && toggleCameraAndTextVisibility,
               child: Text(
                 globalFullPickerLanguage.tapForPhotoHoldForVideo,
+                textAlign: TextAlign.center,
                 style: const TextStyle(color: Color(0xa3ffffff), fontSize: 20),
               ),
             ),

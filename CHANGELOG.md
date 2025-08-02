@@ -1,3 +1,22 @@
+## 2.1.5
+
+* Increase image_cropper version
+
+## 2.1.4
+
+* Upgrade package dependencies
+* Fix warning in flutter 3.27.0
+
+## 2.1.2
+
+* Upgrade package dependencies
+* Fix bug
+
+## 2.1.1
+
+* Upgrade package dependencies
+* Fix bug
+
 ## 2.1.0
 
 * Add `FullPickerWidgetIcon`
