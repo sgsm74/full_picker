@@ -25,12 +25,12 @@ void showSheet(
   final bool isDismissible = true,
 }) {
   showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    isDismissible: isDismissible,
-    useSafeArea: true,
-    builder: (final BuildContext context) => widget,
-  );
+      context: context,
+      showDragHandle: true,
+      isDismissible: isDismissible,
+      useSafeArea: true,
+      builder: (final BuildContext context) => widget,
+      backgroundColor: Colors.white);
 }
 
 FileType extensionType(final String extension) {
