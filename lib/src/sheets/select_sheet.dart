@@ -159,24 +159,28 @@ class _SheetSelectState extends State<SelectSheet> {
             childAspectRatio: MediaQuery.of(context).size.width / (MediaQuery.of(context).size.height / childAspectRatio),
           ),
           itemCount: itemList.length,
-          itemBuilder: (final BuildContext context, final int index) => Material(
-            color: Colors.transparent,
-            child: InkWell(
-              customBorder: const CircleBorder(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  if (itemList[index].widget == null) Icon(itemList[index].icon, size: 30) else itemList[index].widget!,
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Text(itemList[index].name),
-                  ),
-                ],
-              ),
-              onTap: () {
-                goPage(itemList[index]);
-              },
+          itemBuilder: (final BuildContext context, final int index) => InkWell(
+            customBorder: const CircleBorder(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (itemList[index].widget == null)
+                  Icon(
+                    itemList[index].icon,
+                    size: 30,
+                    color: Colors.black,
+                  )
+                else
+                  itemList[index].widget!,
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(itemList[index].name),
+                ),
+              ],
             ),
+            onTap: () {
+              goPage(itemList[index]);
+            },
           ),
         ),
       );
