@@ -221,7 +221,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                 if (videoPath != null && _controller != null)
                   Stack(
                     children: <Widget>[
-                      AspectRatio(aspectRatio: _controller!.value.aspectRatio, child: VideoPlayer(_controller!)),
+                      RotatedBox(quarterTurns: 1, child: VideoPlayer(_controller!)),
                       Align(
                         alignment: Alignment.topLeft,
                         child: Container(
@@ -269,8 +269,9 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                 height: 15,
               ),
             ),
-            Padding(
+            Container(
               padding: const EdgeInsets.only(top: 10, bottom: 15),
+              color: Colors.white,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
