@@ -285,6 +285,7 @@ Future<void> getFullPicker({
   required final String prefixName,
   required final bool inSheet,
   required final RecordingConfig recordingConfig,
+  required final bool hasMultiPhotoCapture,
 }) async {
   onIsUserChange.call(false);
   FullPickerOutput? value;
@@ -378,6 +379,7 @@ Future<void> getFullPicker({
           videoCamera: videoCamera,
           prefixName: prefixName,
           imageCropper: imageCropper,
+          hasMultiPhotoCapture: hasMultiPhotoCapture,
         ),
       ),
     );

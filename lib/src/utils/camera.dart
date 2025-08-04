@@ -18,6 +18,7 @@ class Camera extends StatefulWidget {
     required this.imageCamera,
     required this.videoCamera,
     required this.prefixName,
+    required this.hasMultiPhotoCapture,
     super.key,
   });
 
@@ -25,7 +26,7 @@ class Camera extends StatefulWidget {
   final bool videoCamera;
   final bool imageCamera;
   final String prefixName;
-
+  final bool hasMultiPhotoCapture;
   @override
   State<Camera> createState() => _CameraState();
 }
@@ -327,6 +328,29 @@ class _CameraState extends State<Camera> with WidgetsBindingObserver {
       setState(() {});
       final XFile file = XFile(filePath!);
       imageXFiles.add(file);
+      print('widget.hasMultiPhotoCapture${widget.hasMultiPhotoCapture}');
+      if (mounted && !widget.hasMultiPhotoCapture) {
+        final String extension = getFileExtensionFullPicker(file.path);
+        final String fileName = generateFileName('image');
+
+        Navigator.pop(
+          context,
+          FullPickerOutput(
+            bytes: <Uint8List?>[await file.readAsBytes()],
+            fileType: FullPickerType.image,
+            name: <String?>[fileName + extension],
+            file: <File?>[File(file.path)],
+            xFile: <XFile?>[
+              getFillXFile(
+                file: File(file.path),
+                bytes: await file.readAsBytes(),
+                mime: 'image/jpeg',
+                name: fileName + extension,
+              ),
+            ],
+          ),
+        );
+      }
     });
   }
 

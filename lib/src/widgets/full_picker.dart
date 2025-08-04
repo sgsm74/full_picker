@@ -29,6 +29,7 @@ class FullPicker {
     this.onError,
     this.fullPickerWidgetIcon,
     this.recordingConfig = const RecordingConfig(),
+    this.hasMultiPhotoCapture = true,
   }) {
     /// show or not show sheet for single item or multi item
     int countTrue = 0;
@@ -106,6 +107,7 @@ class FullPicker {
           imageCropper: imageCropper,
           multiFile: multiFile,
           recordingConfig: recordingConfig,
+          hasMultiPhotoCapture: hasMultiPhotoCapture,
         ),
         context,
       );
@@ -129,6 +131,7 @@ class FullPicker {
   final BuildContext context;
   final FullPickerWidgetIcon? fullPickerWidgetIcon;
   final RecordingConfig recordingConfig;
+  final bool hasMultiPhotoCapture;
 
   /// show file picker for single item
   void openAloneFullPicker(final int id) {
@@ -152,6 +155,7 @@ class FullPicker {
       multiFile: multiFile,
       inSheet: false,
       recordingConfig: recordingConfig,
+      hasMultiPhotoCapture: hasMultiPhotoCapture,
     );
   }
 }

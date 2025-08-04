@@ -22,6 +22,7 @@ class SelectSheet extends StatefulWidget {
     required this.file,
     required this.fullPickerWidgetIcon,
     required this.recordingConfig,
+    required this.hasMultiPhotoCapture,
     super.key,
   });
 
@@ -42,6 +43,7 @@ class SelectSheet extends StatefulWidget {
   final String prefixName;
   final FullPickerWidgetIcon fullPickerWidgetIcon;
   final RecordingConfig recordingConfig;
+  final bool hasMultiPhotoCapture;
   @override
   State<SelectSheet> createState() => _SheetSelectState();
 }
@@ -209,6 +211,7 @@ class _SheetSelectState extends State<SelectSheet> {
       inSheet: true,
       bodyTextUrl: widget.bodyTextUrl,
       recordingConfig: widget.recordingConfig,
+      hasMultiPhotoCapture: widget.hasMultiPhotoCapture,
     );
   }
 }
