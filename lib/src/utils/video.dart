@@ -152,7 +152,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
         FullPickerOutput(
           bytes: <Uint8List?>[await file.readAsBytes()],
           fileType: FullPickerType.video,
-          name: <String?>['${file.name}.mp4'],
+          name: <String?>['${file.name}'],
           file: () {
             try {
               return <File?>[File(file.path)];
@@ -174,7 +174,7 @@ class _VideoRecorderPageState extends State<VideoRecorderPage> {
                 }(),
                 bytes: await file.readAsBytes(),
                 mime: 'video/mp4',
-                name: '${file.name}.mp4',
+                name: '${file.name}',
               ),
           ],
         ),
