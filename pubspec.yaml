@@ -30,7 +30,7 @@ dependencies:
   fluttertoast: ^8.2.5
 
   # Crop
-  image_cropper: ^8.1.0
+  image_cropper: ^12.2.1
 
   # File Picker
   file_picker: ^10.2.1
